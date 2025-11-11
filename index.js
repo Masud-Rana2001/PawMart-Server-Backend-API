@@ -49,7 +49,7 @@ async function run() {
 //       try {
 //        const data = await listings.insertMany([
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d5e",
+    
 //     "name": "Friendly Golden Retriever Puppy",
 //     "category": "Pets (Adoption)",
 //     "price": "0",
@@ -60,7 +60,7 @@ async function run() {
 //     "date": "2025-11-08"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d63",
+
 //     "name": "Calm Siamese Kitten",
 //     "category": "Pets (Adoption)",
 //     "price": "0",
@@ -71,7 +71,7 @@ async function run() {
 //     "date": "2025-11-03"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d67",
+
 //     "name": "Adorable Beagle Mix",
 //     "category": "Pets (Adoption)",
 //     "price": "0",
@@ -82,7 +82,7 @@ async function run() {
 //     "date": "2025-11-09"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d68",
+  
 //     "name": "Pair of Love Birds",
 //     "category": "Pets (Adoption)",
 //     "price": "0",
@@ -93,7 +93,7 @@ async function run() {
 //     "date": "2025-11-07"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d69",
+   
 //     "name": "Playful Persian Cat",
 //     "category": "Pets (Adoption)",
 //     "price": "0",
@@ -104,7 +104,7 @@ async function run() {
 //     "date": "2025-11-06"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d6a",
+   
 //     "name": "Small Hamster (Male)",
 //     "category": "Pets (Adoption)",
 //     "price": "0",
@@ -115,7 +115,7 @@ async function run() {
 //     "date": "2025-11-05"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d5f",
+    
 //     "name": "Premium Salmon Dry Kibble (5kg)",
 //     "category": "Pet Food & Treats",
 //     "price": "3500",
@@ -126,7 +126,7 @@ async function run() {
 //     "date": "2025-11-07"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d6b",
+    
 //     "name": "Tuna & Rice Wet Cat Food (24 Cans)",
 //     "category": "Pet Food & Treats",
 //     "price": "2800",
@@ -137,7 +137,7 @@ async function run() {
 //     "date": "2025-11-06"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d6c",
+    
 //     "name": "Natural Chewy Training Bites",
 //     "category": "Pet Food & Treats",
 //     "price": "750",
@@ -148,7 +148,7 @@ async function run() {
 //     "date": "2025-11-05"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d6d",
+    
 //     "name": "Vegetarian Dog Biscuits (Large Pack)",
 //     "category": "Pet Food & Treats",
 //     "price": "1100",
@@ -159,7 +159,7 @@ async function run() {
 //     "date": "2025-11-04"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d6e",
+    
 //     "name": "Rabbit Pellets with Hay (1kg)",
 //     "category": "Pet Food & Treats",
 //     "price": "950",
@@ -170,7 +170,7 @@ async function run() {
 //     "date": "2025-11-03"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d6f",
+    
 //     "name": "Puppy Milk Replacer Formula",
 //     "category": "Pet Food & Treats",
 //     "price": "1600",
@@ -181,7 +181,7 @@ async function run() {
 //     "date": "2025-11-02"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d60",
+    
 //     "name": "Comfort Cat Bed (Large)",
 //     "category": "Accessories",
 //     "price": "1250",
@@ -192,7 +192,7 @@ async function run() {
 //     "date": "2025-11-06"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d73",
+    
 //     "name": "Adjustable Nylon Dog Collar (Red)",
 //     "category": "Accessories",
 //     "price": "350",
@@ -203,7 +203,7 @@ async function run() {
 //     "date": "2025-11-08"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d74",
+    
 //     "name": "Retractable Dog Leash (5m)",
 //     "category": "Accessories",
 //     "price": "990",
@@ -214,7 +214,7 @@ async function run() {
 //     "date": "2025-11-07"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d75",
+    
 //     "name": "Small Pet Carrier (Blue)",
 //     "category": "Accessories",
 //     "price": "2500",
@@ -225,7 +225,7 @@ async function run() {
 //     "date": "2025-11-05"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d76",
+    
 //     "name": "Automatic Pet Feeder",
 //     "category": "Accessories",
 //     "price": "4500",
@@ -236,7 +236,7 @@ async function run() {
 //     "date": "2025-11-04"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d77",
+    
 //     "name": "Waterproof Dog Raincoat",
 //     "category": "Accessories",
 //     "price": "1500",
@@ -247,7 +247,7 @@ async function run() {
 //     "date": "2025-11-03"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d61",
+    
 //     "name": "Multi-Vitamin Drops for Birds",
 //     "category": "Pet Health & Care",
 //     "price": "680",
@@ -258,7 +258,7 @@ async function run() {
 //     "date": "2025-11-05"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d78",
+    
 //     "name": "Flea & Tick Prevention Spray",
 //     "category": "Pet Health & Care",
 //     "price": "1300",
@@ -269,7 +269,7 @@ async function run() {
 //     "date": "2025-11-09"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d79",
+    
 //     "name": "Dental Water Additive",
 //     "category": "Pet Health & Care",
 //     "price": "850",
@@ -280,7 +280,7 @@ async function run() {
 //     "date": "2025-11-08"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d7a",
+    
 //     "name": "Oatmeal Dog Shampoo",
 //     "category": "Pet Health & Care",
 //     "price": "700",
@@ -291,7 +291,7 @@ async function run() {
 //     "date": "2025-11-07"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d7b",
+    
 //     "name": "Joint & Hip Supplement Chews (90 Count)",
 //     "category": "Pet Health & Care",
 //     "price": "2200",
@@ -302,7 +302,7 @@ async function run() {
 //     "date": "2025-11-06"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d7c",
+    
 //     "name": "Grooming Slicker Brush",
 //     "category": "Pet Health & Care",
 //     "price": "550",
@@ -313,7 +313,7 @@ async function run() {
 //     "date": "2025-11-05"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d62",
+    
 //     "name": "Interactive Laser Pointer Toy",
 //     "category": "Toys & Play",
 //     "price": "400",
@@ -324,7 +324,7 @@ async function run() {
 //     "date": "2025-11-04"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d7d",
+    
 //     "name": "Durable Chew Bone (Medium)",
 //     "category": "Toys & Play",
 //     "price": "600",
@@ -335,7 +335,7 @@ async function run() {
 //     "date": "2025-11-03"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d7e",
+    
 //     "name": "Plush Squeaky Hedgehog",
 //     "category": "Toys & Play",
 //     "price": "380",
@@ -346,7 +346,7 @@ async function run() {
 //     "date": "2025-11-02"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d7f",
+    
 //     "name": "Cat Tunnel Collapsible",
 //     "category": "Toys & Play",
 //     "price": "1150",
@@ -357,7 +357,7 @@ async function run() {
 //     "date": "2025-11-01"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d80",
+    
 //     "name": "Interactive Puzzle Dispenser",
 //     "category": "Toys & Play",
 //     "price": "900",
@@ -368,7 +368,7 @@ async function run() {
 //     "date": "2025-10-31"
 //   },
 //   {
-//     "_id": "6541f9d5c41e8f2a1b3c4d81",
+    
 //     "name": "Fetch Rope Toy Set",
 //     "category": "Toys & Play",
 //     "price": "780",
@@ -422,13 +422,90 @@ async function run() {
       })
     })
 
+    // create listings 
+    app.post("/listings", async (req, res) => {
+      try {
+        const result = await listings.insertOne(req.body)
+        res.status(200).json({
+         success: true,
+          data:result
+         })
+      } catch (error) {
+        console.log(error)
+      }
+    })
 
     //get single Listing for details 
-    app.get("/allList/:id", async (req, res) => {
-      const query = { _id: req.params.id };
-      const data = await listings.findOne(query);
-      res.status(200).json(data)
+
+app.get("/allList/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    let query;
+
+    // যদি valid ObjectId হয়, তাহলে ObjectId হিসেবে query করবো
+    if (/^[0-9a-fA-F]{24}$/.test(id)) {
+      query = { _id: new ObjectId(id) };
+    } 
+    // অন্যথায় string id হিসেবে খুঁজবো
+    else {
+      query = { _id: id };
+    }
+
+    const result = await listings.findOne(query);
+
+    if (!result) {
+      return res.status(404).json({ success: false, message: "Listing not found" });
+    }
+
+    res.status(200).json({ success: true, data: result });
+  } catch (error) {
+    console.error("Error fetching listing:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+  }
+});
+
+    
+    //update listing 
+    app.put("/listings/:id", async (req, res) => {
+      const { id } = req.params;
+      const updateData = req.body;
+      try {
+        const filter  =  /^[0-9a-fA-F]{24}$/.test(id)
+      ? { _id: new ObjectId(id) }
+          : { _id: id };
+        
+        const updateDoc = {
+          $set : updateData
+        }
+
+        const result = await listings.updateOne(filter, updateDoc);
+        if (result.matchedCount === 0) {
+      return res.status(404).json({ success: false, message: "Listing not found" });
+        }
+
+           res.status(200).json({ success: true, message: "Listing updated successfully" });
+      } catch (error) {
+        console.error("Error updating listing:", error);
+    res.status(500).json({ success: false, message: "Server error" });
+      }
     })
+
+    //delete a listing 
+    app.delete('/listings/:id', async (req, res) => {
+      const {id} = req.params
+      const filter  =  /^[0-9a-fA-F]{24}$/.test(id)
+      ? { _id: new ObjectId(id) }
+        : { _id: id };
+      
+      try {
+        const result = await listings.deleteOne(filter);
+        res.status(200).json({ success: true, message: "Listing deleted successfully" });
+      } catch (error) {
+         console.error("Error Deleting listing:", error);
+        res.status(500).json({ success: false, message: "Server error" });
+      }
+    })
+
 
 
     //post  order
