@@ -15,19 +15,28 @@ app.use(cors())
 
 
 // app.use(cors({
-//   origin: "http://localhost:5173", 
+//   origin: "http://localhost:5173",
 //   credentials: true
 // }));
 
+
+
+// Firebase setup
+
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+
+const decoded = Buffer.from(process.env.FIREBASE_SERVICE_KEY, "base64").toString("utf8");
+const serviceAccount = JSON.parse(decoded);
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.uscngbq.mongodb.net/?appName=Cluster0`;
 
+
+
+// MongoDB setup
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.uscngbq.mongodb.net/?appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -43,7 +52,7 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
+    // await client.db("admin").command({ ping: 1 });
 
 
     const database = client.db("pawMart");
@@ -127,7 +136,9 @@ async function run() {
     //   )}
       
     // }; 
-
+    app.get('/', (req, res) => {
+      res.send('Hello World! from pawMart')
+    })
  
 
     //all list without pagination 
@@ -335,13 +346,12 @@ run().catch(console.dir);
 
 
 
+// Instead export the Express app
+module.exports = app;
 
-app.get('/', (req, res) => {
-  res.send('Hello World! from pawMart')
-})
 
-app.listen(port, () => {
-  console.log(`app listening on port ${port}`)
-})
+// app.listen(port, () => {
+//   console.log(`app listening on port ${port}`)
+// })
 
 
