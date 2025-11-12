@@ -47,6 +47,10 @@ const client = new MongoClient(uri, {
   }
 });
 
+let listings;
+let orders;
+
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -56,8 +60,16 @@ async function run() {
 
 
     const database = client.db("pawMart");
-    const listings = database.collection("listings")
-    const orders = database.collection("orders")
+    
+     listings = database.collection("listings")
+     orders = database.collection("orders")
+
+} catch(e) {
+      console.error("MongoDB Connection or Initialization Error:", e);
+  }
+}
+
+run().catch(console.dir);
 
 
 
@@ -336,14 +348,8 @@ async function run() {
 
 
 
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
-  } finally {
-    // Ensures that the client will close when you finish/error
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
   
-  }
-}
-run().catch(console.dir);
-
 
 
 // Instead export the Express app
