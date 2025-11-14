@@ -16,7 +16,6 @@ app.use(cookieParser());
 
 app.use(cors({
   origin: "https://paw-martmr.netlify.app"
-  
 }));
 
 
