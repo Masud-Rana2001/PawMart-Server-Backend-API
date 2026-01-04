@@ -10,7 +10,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://paw-martmr.netlify.app",
+    // origin: "https://paw-martmr.netlify.app",
   })
 );
 
@@ -40,11 +40,13 @@ app.get("/", (req, res) => {
 
 async function run() {
   try {
-    //  await client.connect();
+    await client.connect();
     //DB & collections
     const database = client.db("pawMart");
     const listings = database.collection("listings");
     const orders = database.collection("orders");
+    const users = database.collection("users");
+    const favorites = database.collection("favorites");
 
     //Apps Route
 
@@ -88,7 +90,12 @@ async function run() {
     // create listings
     app.post("/listings", async (req, res) => {
       try {
-        const result = await listings.insertOne(req.body);
+        const listingData = {
+          ...req.body,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        const result = await listings.insertOne(listingData);
         res.status(200).json({
           success: true,
           data: result,
@@ -211,7 +218,12 @@ async function run() {
       //     message: "Access denied: You are not authorized to view this resource.",
       //   });
       // }
-      const query = { email: req.params.email };
+      const query = { 
+        $or: [
+          { email: req.params.email },
+          { ownerEmail: req.params.email }
+        ]
+      };
       const result = await listings.find(query).toArray();
       res.status(200).json(result);
     });
@@ -238,6 +250,546 @@ async function run() {
         res.status(500).json({
           success: false,
           message: "Internal server error",
+        });
+      }
+    });
+
+    // 👤 Get user profile by email
+    app.get("/user/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const query = { email };
+        const result = await users.findOne(query);
+        
+        if (!result) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+        
+        res.status(200).json({
+          success: true,
+          data: result,
+        });
+      } catch (error) {
+        console.error("Error fetching user:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+        });
+      }
+    });
+
+    // 🔄 Create or update user profile
+    app.post("/user", async (req, res) => {
+      try {
+        const { email, displayName, photoURL, phone, bio } = req.body;
+        
+        if (!email) {
+          return res.status(400).json({
+            success: false,
+            message: "Email is required",
+          });
+        }
+
+        const query = { email };
+        const existingUser = await users.findOne(query);
+
+        if (existingUser) {
+          // User already exists, don't create duplicate
+          return res.status(200).json({
+            success: true,
+            message: "User already exists",
+            data: existingUser,
+          });
+        }
+
+        const newUser = {
+          email,
+          displayName: displayName || "",
+          photoURL: photoURL || "",
+          phone: phone || "",
+          bio: bio || "",
+          role: "user",
+          rating: 0,
+          totalOrders: 0,
+          totalListings: 0,
+          favoriteListings: [],
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        const result = await users.insertOne(newUser);
+
+        res.status(201).json({
+          success: true,
+          message: "User profile created successfully",
+          data: result,
+        });
+      } catch (error) {
+        console.error("Error creating user:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+        });
+      }
+    });
+
+    // 🔄 Sync User on Login - Creates or updates user profile with all fields
+    app.post("/user/sync", async (req, res) => {
+      try {
+        const { email, displayName, photoURL } = req.body;
+        
+        if (!email) {
+          return res.status(400).json({
+            success: false,
+            message: "Email is required",
+          });
+        }
+
+        const existingUser = await users.findOne({ email });
+
+        if (existingUser) {
+          // User exists, update with new info if provided
+          const updatedUser = await users.findOneAndUpdate(
+            { email },
+            {
+              $set: {
+                displayName: displayName || existingUser.displayName,
+                photoURL: photoURL || existingUser.photoURL,
+                updatedAt: new Date(),
+              }
+            },
+            { returnDocument: "after" }
+          );
+
+          return res.status(200).json({
+            success: true,
+            message: "User profile updated",
+            data: updatedUser.value,
+          });
+        }
+
+        // Create new user with all required fields
+        const adminEmails = ["admin@pawmart.com"]; // Define admin emails
+        const newUser = {
+          email,
+          displayName: displayName || email.split("@")[0],
+          photoURL: photoURL || "",
+          phone: "",
+          bio: "",
+          role: adminEmails.includes(email) ? "admin" : "user",
+          rating: 5.0,
+          totalOrders: 0,
+          totalListings: 0,
+          totalSales: 0,
+          favoritesCount: 0,
+          favoriteListings: [],
+          orderHistory: [],
+          listingHistory: [],
+          badges: [],
+          verificationStatus: "pending",
+          accountStatus: "active",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        };
+
+        const result = await users.insertOne(newUser);
+
+        res.status(201).json({
+          success: true,
+          message: "User profile created successfully",
+          data: {
+            _id: result.insertedId,
+            ...newUser,
+          },
+        });
+      } catch (error) {
+        console.error("Error syncing user:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          error: error.message,
+        });
+      }
+    });
+
+    // ✏️ Update user profile
+    app.put("/user/:email", async (req, res) => {
+      try {
+        const email = req.params.email;
+        const { displayName, photoURL, phone, bio } = req.body;
+
+        const query = { email };
+        const updateData = {
+          $set: {
+            displayName: displayName || "",
+            photoURL: photoURL || "",
+            phone: phone || "",
+            bio: bio || "",
+            updatedAt: new Date(),
+          },
+        };
+
+        const result = await users.updateOne(query, updateData, { upsert: true });
+
+        if (result.matchedCount === 0 && result.upsertedCount === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "User not found",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "User profile updated successfully",
+          data: result,
+        });
+      } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+        });
+      }
+    });
+
+    // ❤️ ADD TO FAVORITES
+    app.post("/fav", async (req, res) => {
+      try {
+        const { listingId, userEmail } = req.body;
+        
+        if (!listingId || !userEmail) {
+          return res.status(400).json({
+            success: false,
+            message: "Listing ID and user email are required",
+          });
+        }
+
+        // Convert listingId to ObjectId if it's a valid MongoDB ID
+        let listingIdQuery = listingId;
+        if (/^[0-9a-fA-F]{24}$/.test(listingId)) {
+          listingIdQuery = new ObjectId(listingId);
+        }
+
+        const query = { listingId: listingIdQuery, userEmail };
+        const existingFav = await favorites.findOne(query);
+
+        if (existingFav) {
+          return res.status(200).json({
+            success: false,
+            message: "Already added to favorites",
+          });
+        }
+
+        const newFav = {
+          listingId: listingIdQuery,
+          userEmail,
+          createdAt: new Date(),
+        };
+
+        const result = await favorites.insertOne(newFav);
+
+        res.status(201).json({
+          success: true,
+          message: "Added to favorites successfully",
+          data: result,
+        });
+      } catch (error) {
+        console.error("Error adding to favorites:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          error: error.message
+        });
+      }
+    });
+
+    // 💔 REMOVE FROM FAVORITES
+    app.delete("/fav/:listingId/:userEmail", async (req, res) => {
+      try {
+        const { listingId, userEmail } = req.params;
+
+        // Convert listingId to ObjectId if it's a valid MongoDB ID
+        let listingIdQuery = listingId;
+        if (/^[0-9a-fA-F]{24}$/.test(listingId)) {
+          listingIdQuery = new ObjectId(listingId);
+        }
+
+        const query = { listingId: listingIdQuery, userEmail };
+        const result = await favorites.deleteOne(query);
+
+        if (result.deletedCount > 0) {
+          res.status(200).json({
+            success: true,
+            message: "Removed from favorites",
+          });
+        } else {
+          res.status(404).json({
+            success: false,
+            message: "Favorite not found",
+          });
+        }
+      } catch (error) {
+        console.error("Error removing from favorites:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          error: error.message
+        });
+      }
+    });
+
+    // 📋 GET USER FAVORITES
+    app.get("/my-favorites/:userEmail", async (req, res) => {
+      try {
+        const { userEmail } = req.params;
+
+        const favoritesData = await favorites.find({ userEmail }).toArray();
+        
+        // Handle both string and ObjectId formats
+        const listingIds = favoritesData.map(fav => {
+          if (typeof fav.listingId === 'string' && /^[0-9a-fA-F]{24}$/.test(fav.listingId)) {
+            return new ObjectId(fav.listingId);
+          }
+          return fav.listingId;
+        });
+
+        const favoriteListings = await listings.find({ _id: { $in: listingIds } }).toArray();
+
+        res.status(200).json({
+          success: true,
+          data: favoriteListings,
+        });
+      } catch (error) {
+        console.error("Error fetching favorites:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          error: error.message
+        });
+      }
+    });
+
+    // ✅ CHECK IF LISTING IS FAVORITE
+    app.get("/is-favorite/:listingId/:userEmail", async (req, res) => {
+      try {
+        const { listingId, userEmail } = req.params;
+
+        // Convert listingId to ObjectId if it's a valid MongoDB ID
+        let listingIdQuery = listingId;
+        if (/^[0-9a-fA-F]{24}$/.test(listingId)) {
+          listingIdQuery = new ObjectId(listingId);
+        }
+
+        const result = await favorites.findOne({ listingId: listingIdQuery, userEmail });
+
+        res.status(200).json({
+          success: true,
+          isFavorite: !!result,
+        });
+      } catch (error) {
+        console.error("Error checking favorite:", error);
+        res.status(500).json({
+          success: false,
+          message: "Internal server error",
+          error: error.message
+        });
+      }
+    });
+
+    // Dashboard Statistics Endpoints
+
+    // Migration: Update existing listings to use ownerEmail if email field exists
+    app.post("/migrate/listings", async (req, res) => {
+      try {
+        const result = await listings.updateMany(
+          { email: { $exists: true }, ownerEmail: { $exists: false } },
+          [{ $set: { ownerEmail: "$email" } }]
+        );
+        res.status(200).json({
+          success: true,
+          message: `Migrated ${result.modifiedCount} listings to use ownerEmail`
+        });
+      } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+      }
+    });
+
+    // GET /dashboard/stats - For Admin Dashboard
+    app.get("/dashboard/stats", async (req, res) => {
+      try {
+        const totalUsers = await users.countDocuments();
+        const totalListings = await listings.countDocuments();
+        const totalOrders = await orders.countDocuments();
+        
+        // Calculate total revenue
+        const revenueResult = await orders.aggregate([
+          { $group: { _id: null, totalRevenue: { $sum: "$price" } } }
+        ]).toArray();
+        const totalRevenue = revenueResult[0]?.totalRevenue || 0;
+
+        // Get growth metrics (last 30 days)
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const usersGrowth = await users.countDocuments({
+          createdAt: { $gte: thirtyDaysAgo }
+        });
+        const ordersGrowth = await orders.countDocuments({
+          createdAt: { $gte: thirtyDaysAgo }
+        });
+
+        // Order status breakdown
+        const orderStatusBreakdown = await orders.aggregate([
+          { $group: { _id: "$status", count: { $sum: 1 } } }
+        ]).toArray();
+
+        res.status(200).json({
+          success: true,
+          data: {
+            totalUsers,
+            totalListings,
+            totalOrders,
+            totalRevenue,
+            userGrowth: usersGrowth,
+            orderGrowth: ordersGrowth,
+            orderStatusBreakdown: orderStatusBreakdown || []
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching dashboard stats:", error);
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch dashboard statistics"
+        });
+      }
+    });
+
+    // GET /dashboard/user-stats/:email - For User Dashboard
+    app.get("/dashboard/user-stats/:email", async (req, res) => {
+      try {
+        const { email } = req.params;
+        
+        // User's orders count
+        const myOrders = await orders.countDocuments({ buyerEmail: email });
+        
+        // User's active listings (handle both email and ownerEmail for backwards compatibility)
+        const activeListings = await listings.countDocuments({ 
+          $or: [
+            { ownerEmail: email },
+            { email: email }
+          ]
+        });
+        
+        // User's total sales (handle both ownerEmail and email fields)
+        const userSalesResult = await orders.aggregate([
+          { 
+            $match: { 
+              $or: [
+                { ownerEmail: email },
+                { sellerEmail: email }
+              ]
+            } 
+          },
+          { $group: { _id: null, totalSales: { $sum: "$price" } } }
+        ]).toArray();
+        const totalSales = userSalesResult[0]?.totalSales || 0;
+
+        // User's average rating (if ratings collection exists, otherwise default)
+        const userProfile = await users.findOne({ email });
+        const rating = userProfile?.rating || 4.8;
+
+        // Sales growth (last 30 days)
+        const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+        const recentSalesResult = await orders.aggregate([
+          { 
+            $match: { 
+              $or: [
+                { ownerEmail: email },
+                { sellerEmail: email }
+              ],
+              createdAt: { $gte: thirtyDaysAgo }
+            } 
+          },
+          { $group: { _id: null, sales: { $sum: "$price" } } }
+        ]).toArray();
+        const recentSales = recentSalesResult[0]?.sales || 0;
+        const totalSalesAllTime = totalSales || 1;
+        const salesGrowth = totalSalesAllTime ? Math.round((recentSales / totalSalesAllTime) * 100) : 0;
+
+        res.status(200).json({
+          success: true,
+          data: {
+            myOrders,
+            activeListings,
+            totalSales,
+            rating,
+            salesGrowth
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching user dashboard stats:", error);
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch user statistics"
+        });
+      }
+    });
+
+    // GET /dashboard/monthly-sales - For Charts
+    app.get("/dashboard/monthly-sales/:email", async (req, res) => {
+      try {
+        const { email } = req.params;
+        const isAdmin = req.query.isAdmin === "true";
+
+        const query = isAdmin ? {} : { 
+          $or: [
+            { ownerEmail: email },
+            { sellerEmail: email }
+          ]
+        };
+        
+        // Get sales data for last 6 months
+        const sixMonthsAgo = new Date();
+        sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+        const monthlySales = await orders.aggregate([
+          {
+            $match: {
+              ...query,
+              createdAt: { $gte: sixMonthsAgo }
+            }
+          },
+          {
+            $group: {
+              _id: {
+                year: { $year: "$createdAt" },
+                month: { $month: "$createdAt" }
+              },
+              sales: { $sum: "$price" },
+              orders: { $sum: 1 }
+            }
+          },
+          { $sort: { "_id.year": 1, "_id.month": 1 } }
+        ]).toArray();
+
+        // Format for chart
+        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+        const chartData = monthlySales.map(item => ({
+          month: monthNames[item._id.month - 1],
+          sales: item.sales,
+          orders: item.orders
+        }));
+
+        res.status(200).json({
+          success: true,
+          data: chartData
+        });
+      } catch (error) {
+        console.error("Error fetching monthly sales:", error);
+        res.status(500).json({
+          success: false,
+          message: "Failed to fetch monthly sales data"
         });
       }
     });
